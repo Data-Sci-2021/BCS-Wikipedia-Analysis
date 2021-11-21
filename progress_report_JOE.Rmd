@@ -2,7 +2,9 @@
 title: "Progress Report-JOE"
 author: "Joe Patrick"
 date: "10/11/2021"
-output: github_document
+output: 
+  github_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -112,7 +114,7 @@ Two problems:
 1. I still have to run each feature-function on every URL independently, so that if I have 12 Wiki-texts, I have to run each function 12 times. This is what I was envisioning would be corrected by a corpus-type object that I could pass through a function once. 
 
 2. I am trying to nest all my feature-functions into one master function that will do all the processing for me. I can't make it work yet- is this genius or madness? 
-## 11-20-2021 Second Project Report; NEW CONTINUING
+## Second Project Report, 11-20-2021- NEW CONTINUING
 Figured out how to import the data I need in a processable format. Cleaned the data by trimming front/back white space and making everything lower case. Made a function to do the importing and cleaning, using a URL as input. Started processing my data. I have about 5 features testable via functions already. I set the license to MIT in the first progress report because it was suggested as a pretty generic, open license and since I'm working with open-source data to begin with, I should be as open as possible. It is all shareable widely and freely because it's Wikipedia data. 
 
 Two problems: 

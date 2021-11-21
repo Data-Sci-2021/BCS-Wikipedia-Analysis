@@ -3,6 +3,12 @@ Progress Report-JOE
 Joe Patrick
 10/11/2021
 
+-   [Initial Set-Up, 10-11-2021](#initial-set-up-10-11-2021)
+-   [Belated First Progress Report,
+    11/1/21](#belated-first-progress-report-11121)
+-   [11-20-2021 Second Project
+    Report](#11-20-2021-second-project-report)
+
 ## Initial Set-Up, 10-11-2021
 
 Created the Github repo and uploaded the progress report and the plan
@@ -135,13 +141,13 @@ Two problems:
 
 2.  I am trying to nest all my feature-functions into one master
     function that will do all the processing for me. I can’t make it
-    work yet- is this genius or madness? \#\# 11-20-2021 Second Project
-    Report; NEW CONTINUING Figured out how to import the data I need in
-    a processable format. Cleaned the data by trimming front/back white
-    space and making everything lower case. Made a function to do the
-    importing and cleaning, using a URL as input. Started processing my
-    data. I have about 5 features testable via functions already. I set
-    the license to MIT in the first progress report because it was
+    work yet- is this genius or madness? \#\# Second Project Report,
+    11-20-2021- NEW CONTINUING Figured out how to import the data I need
+    in a processable format. Cleaned the data by trimming front/back
+    white space and making everything lower case. Made a function to do
+    the importing and cleaning, using a URL as input. Started processing
+    my data. I have about 5 features testable via functions already. I
+    set the license to MIT in the first progress report because it was
     suggested as a pretty generic, open license and since I’m working
     with open-source data to begin with, I should be as open as
     possible. It is all shareable widely and freely because it’s
