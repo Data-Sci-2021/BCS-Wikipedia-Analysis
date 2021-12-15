@@ -1,0 +1,70 @@
+---
+title: "webscraping"
+author: "Joe Patrick"
+date: "10/21/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(rvest)
+```
+
+```{r}
+wiki_textKosovoHR <-read_html("https://hr.wikipedia.org/wiki/Kosovo") 
+str(wiki_textKosovoHR)
+```
+```{r}
+wiki_textKosovoHR %>% html_elements("div p") %>% html_text()
+```
+```{r}
+kosovohr <- wiki_textKosovoHR %>% html_elements("div p") %>% html_text()
+kosovohr[kosovohr %>% str_detect("[rica|rika]")]
+```
+
+```{r}
+goodkosovohr <- kosovohr %>% str_detect("Kosovo")
+```
+
+
+```{r}
+kosovohr %>% str_detect("sto") %>% sum()
+kosovohr %>% str_detect("sta") %>% sum()
+
+```
+
+```{r}
+wiki_textKosovoSR <-read_html("https://sr.wikipedia.org/wiki/Косово") 
+```
+
+```{r}
+wiki_textKosovoSR %>% html_elements("div p") %>% html_text()
+```
+
+```{r}
+kosovosr <- wiki_textKosovoSR %>% html_elements("div p") %>% html_text()
+```
+
+```{r}
+goodkosovosr <- kosovosr %>% str_extract("[sta|шта|sto|што]")
+str(goodkosovosr)
+```
+
+```{r}
+kosovosr %>% str_detect("sto") %>% sum()
+kosovosr %>% str_detect("што") %>% sum()
+kosovosr %>% str_detect(" [sta|шта|sto|што] ") %>% sum()
+```
+
+```{r}
+goodkosovosr(goodkosovosr %>% str_detect(" [mnogo|puno|много|пуно] "))
+```
+```{r}
+KoRGhr <- read_html('https://hr.wikipedia.org/wiki/Razgovor:Kosovo')
+KoRGhr %>% html_elements("div p") %>% html_text() %>% str_count("\\b(tko|ko)\\b")
+# KoRGhr %>% str_extract("[tko|ko]")
+# str_subset after maximal regex only get indiv lines with feature
+# str_split to split tokens in a single string? str_count? 
+# maximally big vs. maximally small -- approach both sides 
+```
+

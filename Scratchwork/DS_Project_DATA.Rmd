@@ -1,0 +1,106 @@
+---
+title: "DS_Project_DATA"
+author: "Joe Patrick"
+date: "11/1/2021"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+Sys.setlocale("LC_CTYPE", "sr-me")
+```
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(tm) 
+library(corpus)
+library(quanteda)
+library(ngram)
+```
+
+```{r}
+input_article <- function(x){
+    x <- read_html(x) %>% html_elements("p") %>% html_text()}
+```
+
+```{r}
+KosovoHR <- input_article("https://hr.wikipedia.org/wiki/Kosovo")
+CetnikHR <- input_article("https://hr.wikipedia.org/wiki/%C4%8Cetnici")
+UstasheHR <- input_article("https://hr.wikipedia.org/wiki/Usta%C5%A1e")
+```
+
+```{r}
+head(KosovoHR)
+```
+
+
+
+
+
+```{r}
+KHR_delim <- frame() %>%
+  read_delim(KosovoHR)
+read_delim("KosovoHR")
+```
+
+```{r}
+KHR_parsed %>% str_detect("\\bšto\\b") %>% sum()
+```
+
+```{r}
+KosovoHR %>% str_detect("што") %>% sum()
+```
+
+```{r}
+wiki_textKosovoHR %>% str_detect("sta") %>% sum()
+```
+
+```{r}
+wiki_textKosovoHR %>% str_detect("šta") %>% sum()
+```
+
+```{r}
+KHR_parsed %>% str_detect(" [sta|шта|sto|што] ") %>% sum()
+```
+
+```{r}
+typeof(wiki_textKosovoHR)
+```
+
+Trying to make these files into a corpus
+
+```{r}
+HRwikiCorpusText <- as_corpus_text(c(wiki_textKosovoHR, wiki_textCetnikHR, wiki_textUstHR))
+# HRwikiCorpusText = list(wiki_textKosovoHR, wiki_textCetnikHR, wiki_textUstHR)
+```
+
+```{r}
+typeof(HRwikiCorpusText)
+typeof(wiki_textKosovoHR)
+```
+
+```{r}
+# HRwikiCorpClean <- trimws(HRwikiCorpusText)
+# HRwikiCorpCleanTokens <- text_tokens(HRwikiCorpClean)
+```
+
+```{r}
+#names(HRwikiCorpusText)
+#term_stats(wiki_textKosovoHR, drop_punct = TRUE, drop = stopwords_en)
+```
+
+```{r}
+text_locate(HRwikiCorpCleanTokens, "srbija", stemmer = "en")
+```
+
+How to show which of the three articles the word is coming from? 
+
+```{r}
+#print(as_corpus_text((HRwikiCorpusText)))
+#print(as_corpus_frame((HRwikiCorpusText)))
+```
+```{r}
+Sys.setlocale("LC_CType", "English")
+```
+
