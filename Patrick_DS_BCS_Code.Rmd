@@ -1,0 +1,193 @@
+---
+title: "Final Data Science Project Code"
+author: "Joe Patrick"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Import all necessary libraries 
+
+```{r}
+library(rvest)
+library(tidyverse)
+sessionInfo()
+```
+
+# Create functions
+
+### 1. Import and clean Wiki data
+
+This function downloads the url and cleans it by removing citations, lowering case, and trimming white space. 
+
+```{r}
+input_data <- function(x) {
+  x <- read_html(x) %>% 
+    html_elements("#collapsibleTable1 tr:nth-child(2) td , .tright+ ul li , .infobox small , #mw-content-text p") %>% 
+    html_text() %>% 
+    str_remove_all("\\[\\d+?\\]") %>%
+    str_trim() %>% 
+    tolower()
+  
+}
+```
+
+### 2. Check for 'mnogo' vs. 'puno'
+
+This function processes the object to see if any version of puno/mnogo are present. 
+
+```{r}
+mnogopuno <- function(x) {
+  str_extract_all(x, "(mnogo|puno|много|пуно) \\b") %>% keep(~length(.x)>0) %>%
+    flatten_chr()
+}
+```
+
+### 3. Check for [-isa] vs. [-ira|-ova]
+
+This function tests for clusters of -isa (HR intl verbs) or -ira, -ova (SR intl verbs). It does return false positives though, because this is a common syllable pattern. 
+
+```{r}
+isa_iraova <- function(x) {
+  str_extract_all(x, "\\w+ [a-z\\p{Cyrillic}]+(isa|ira|ova|иса|ира|ова) \\b") %>%
+    keep(~length(.x)>0)%>%
+    flatten_chr()
+}
+```
+
+### 4. Check for 'ko' vs. 'tko'
+
+This function tests for presence of ko/tko and their variants (in trigrams). It does return false positives though, because this is a common syllable pattern. 
+
+```{r}
+ko_tko <- function(x) {
+  str_extract_all(x, "\\b [a-z\\p{Cyrillic}]+(ko|tko|ко|тко) \\b") %>%
+    keep(~length(.x)>0)%>%
+    flatten_chr()
+}
+```
+
+### 5. Check for Da vs. Infinitive construction
+
+Finds 'da' and preceding and following word.
+Primary feature: da + finite verb (SR) vs. infinitive (HR)-- da posluzi vs posluziti
+
+```{r}
+da_inf <- function(x) {
+  str_extract_all(x, "(((\\w+ da \\w+)|(\\w+ да \\w+))|(\b ([a-z\\p{Cyrillic}]+(iti|ити) \\w+)))")%>%
+    keep(~length(.x)>0)%>%
+    flatten_chr()
+}
+```
+
+### 6. Check for 's' vs. 'sa'
+
+Finds use of preposition 's' (HR)(4x more frequent in HR) or 'sa' (SR)(2.5x more freq in SR)(Tosovic 2009)
+
+```{r}
+sorsa <- function(x) {
+  str_extract_all(x, "(\\w+ s \\w+ | \\w+ sa \\w+)|(\\w+ с \\w+ | \\w+ са \\w+) ") %>%
+    keep(~length(.x)>0)%>%
+    flatten_chr()
+}
+```
+
+### 7. Check for 'Što' vs. 'Šta'
+
+Finds use of 'Što' (SR) vs. 'Šta'(HR)
+
+```{r}
+stosta <- function(x, ...) {
+  str_extract_all(x, "(što|šta|што|шта) \\b") %>% keep(~length(.x)>0) %>%
+    flatten_chr()
+}
+```
+
+
+### 8. Check for 'Da li' vs. 'Je li'
+
+Finds da li (SR) vs. je li (HR)- for yes/no questions and other limited syntactic constructions. 
+```{r}
+dali_jeli <- function(x) {
+  str_extract_all(x, "\\b(da.li|je.li|да.ли|је.ли)\\b") %>% keep(~length(.x)>0) %>%
+    flatten_chr()
+}
+```
+
+### 9. Check for Synth future vs. Nonsynth future
+
+Finds use of Synth future (RS) vs. Nonsynth future (HR) constructions.
+
+```{r}
+synth_non <- function(x) {
+  str_extract_all(x, "(\\b (ću|ćeš|će|ćemo|ćete|ћу|ћеш|ће|ћемо|ћете)\\b)|(\\w*(ću|ćeš|će|ćemo|ćete|ћу|ћеш|ће|ћемо|ћете)\\b)") %>% keep(~length(.x)>0) %>%
+    flatten_chr()
+}
+```
+
+### 10. Check for 'Treba' variation
+
+Finds use of conjugated Trebam/o/ala (SR)/ impersonal 3rd person Treba (HR)
+```{r}
+treba <- function(x) {
+  str_extract_all(x, "((\\btreba(m|s|mo|te|ju)\\b|\\btreba(?! da))|(\\btreba da\\b))|((\\bтреба(м|с|мо|те|ју)\\b|\\bтреба(?! да))|(\\bтреба да\\b))") %>% keep(~length(.x)>0) %>%
+    flatten_chr()
+}
+```
+
+### 11. Check for [-rica] vs. [-rka]
+
+Finds use of rica (SR)/ rka (RS), which are suffixes for feminine agent nouns
+
+```{r}
+rica_rka <- function(x) {
+  str_extract_all(x, "\\w*(rica|rka|риса|рка)\\b") %>% keep(~length(.x)>0) %>%
+    flatten_chr()
+}
+```
+
+# Processing my own data
+
+```{r}
+get_feat_df <- function(URL, featFunc) {
+  ##Check that both arguments are length 1
+  if (length(URL)!= 1 || !is.character(URL)) {
+    stop("URL must be a length-1 character vector")
+  }
+  if (length(featFunc)!= 1 || !is.function(featFunc)) {
+    stop("featFunc must be a single function")
+  }
+  
+  ##Get text nodes
+  txt <- input_data(URL)
+  
+  ##Get vector of hits
+  featData <- featFunc(txt)
+  
+  ##Get function name (https://stackoverflow.com/a/10520832)
+  funcName <- deparse(substitute(featFunc))
+  
+  ##Return as dataframe
+  tibble(URL, featData) %>% 
+    set_names(c("URL", funcName))
+}
+
+c("https://sr.wikipedia.org/wiki/%D0%9A%D0%BE%D1%81%D0%BE%D0%B2%D0%BE", "https://sr.wikipedia.org/wiki/%D0%A7%D0%B5%D1%82%D0%BD%D0%B8%D1%86%D0%B8", "https://sr.wikipedia.org/wiki/%D0%A3%D1%81%D1%82%D0%B0%D1%88%D0%B5", "https://sr.wikipedia.org/wiki/%D0%9F%D1%80%D0%B0%D0%B2%D0%BE%D1%81%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0_%D1%86%D1%80%D0%BA%D0%B2%D0%B0_%D1%83_%D0%A6%D1%80%D0%BD%D0%BE%D1%98_%D0%93%D0%BE%D1%80%D0%B8", "https://sr.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D0%BC") %>% 
+  map_dfr(get_feat_df, da_inf) %>% 
+  write_csv("/Users/Joe1/Desktop/DSPROJECT/srdainfa.csv")
+```
+
+
+# Link Bank 
+
+Croatian (HR) and Serbian (SR) wiki links with parentheses and quotes for easy copy-paste:
+
+HR:("https://hr.wikipedia.org/wiki/Kosovo","https://hr.wikipedia.org/wiki/%C4%8Cetnici", "https://hr.wikipedia.org/wiki/Usta%C5%A1e", "https://hr.wikipedia.org/wiki/Pravoslavna_crkva_u_Crnoj_Gori","https://hr.wikipedia.org/wiki/Nacionalizam")
+
+SR:("https://sr.wikipedia.org/wiki/%D0%9A%D0%BE%D1%81%D0%BE%D0%B2%D0%BE", "https://sr.wikipedia.org/wiki/%D0%A7%D0%B5%D1%82%D0%BD%D0%B8%D1%86%D0%B8", "https://sr.wikipedia.org/wiki/%D0%A3%D1%81%D1%82%D0%B0%D1%88%D0%B5", "https://sr.wikipedia.org/wiki/%D0%9F%D1%80%D0%B0%D0%B2%D0%BE%D1%81%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0_%D1%86%D1%80%D0%BA%D0%B2%D0%B0_%D1%83_%D0%A6%D1%80%D0%BD%D0%BE%D1%98_%D0%93%D0%BE%D1%80%D0%B8", "https://sr.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D0%BC")
