@@ -30,8 +30,8 @@ To test out my hypothesis, I made corpora out of five articles imported from Wik
 
 ## Included Files and Folders
 
-[**Final Report (knitted .md)**](/Users/Joe1/Desktop/DataScienceR.nosync/BCS-Wikipedia-Analysis/final_report.md)  
-[**Final Report (.rmd)**](/Users/Joe1/Desktop/DataScienceR.nosync/BCS-Wikipedia-Analysis/final_report.rmd)  
-[**License**](/Users/Joe1/Desktop/DataScienceR.nosync/BCS-Wikipedia-Analysis/license)  
-[**Data in .csv file format**](/Users/Joe1/Desktop/DataScienceR.nosync/BCS-Wikipedia-Analysis/data_dsproject)  
+[**Final Report (knitted .md)**](final_report.md)  
+[**Final Report (.rmd)**](final_report.Rmd)  
+[**License**](LICENSE)  
+[**Data Table**](DataCounts.xlsx)  
 [**Ljubešić, Miličević-Petrović, and Samardžić (2018)**](https://www.cambridge.org/core/journals/journal-of-linguistic-geography/article/borders-and-boundaries-in-bosnian-croatian-montenegrin-and-serbian-twitter-data-to-the-rescue/4F81845F290F862E3F17882E567E702C/share/c1dba0f4b30d62b7e9f040fc06222c2d6e9ebc02)  
