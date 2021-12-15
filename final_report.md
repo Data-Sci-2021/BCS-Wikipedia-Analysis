@@ -72,7 +72,7 @@ on Wikipedia. Note that for the Slavic languages of the Western Balkans
 there are four domains available: Croatian (Hrvatski), Bosnian
 (Bosanski), Serbian (Српски), and Serbo-Croatian (Srbo-Hrvatski).
 
-<img src="/Users/Joe1/Desktop/wiki_langs.png">
+<img src="Images/wiki_langs.png">
 
 Users of Wikipedia have to make an initial choice of which language
 domain to contribute to, thus starting the collaborative process with a
@@ -90,7 +90,7 @@ Wikis. The original 16 features used by Ljubešić, N., Miličević
 Petrović, M., & Samardžić, T. (2018) are reduced to 10 features for ease
 of collection. See appendix for list of original 16 features.
 
-<img src="/Users/Joe1/Desktop/ds_ppttable.png">
+<img src="Images/ds_ppttable.png">
 
 # Method
 
@@ -111,7 +111,7 @@ the use of intensifying adverbs mnogo/puno, the use of preposition s/sa,
 use of question word što/šta, ‘treba’ variation, and finally a moderate
 difference in the use of synthetic versus analytic future tense.
 
-<img src="/Users/Joe1/Desktop/databcs.png">
+<img src="Images/databcs.png">
 
 The goal of this project was to build a method of collecting dialect
 data on Wikipedia, which is an understudied but valuable source of
